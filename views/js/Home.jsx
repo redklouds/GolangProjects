@@ -6,9 +6,10 @@ class Home extends React.Component {
                     <h1> Jokeish</h1>
                     <p> A oat of the Data jokes heheh</p>
                     <p> Sign in to get MOOwww fantastic access yo!</p>
-                    <a onClick={this.authenticate} className="btn btn-primary btn-lg btn-login btn-bloack">Sign in<</a>
+                    <a onClick={this.authenticate} className="btn btn-primary btn-lg btn-login btn-block">Sign in </a>
                 </div>
             </div>
         )
     }
 }
+
