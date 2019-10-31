@@ -25,6 +25,11 @@ class App extends React.Component {
 }
 
 class Home extends React.Component {
+
+    authenticate(){
+        alert("SWAGGER");
+        this.loggedIn = true;
+    }
     render() {
         return (
             <div className="container">
@@ -38,6 +43,8 @@ class Home extends React.Component {
         )
     }
 }
+
+
 
 
 
