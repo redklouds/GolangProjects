@@ -1,17 +1,15 @@
 package main
 
-
 import (
 	"net/http"
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
-
-func main(){
+func main() {
 
 	router := gin.Default()
-	
 
 	//server frontent static files
 
@@ -22,8 +20,28 @@ func main(){
 	//it seems size wise and scale
 	//	net/http -> mux -> gin https://forum.golangbridge.org/t/is-gorilla-mux-a-mainly-used-package-to-write-restful-api/7089
 
-	api := router.group("/api"){
-		
+	//technically this Grouping feature allows for grouping multiple routes
+	//** Look this up
+	api := router.Group("/api")
+	{
+
+		api.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "pong",
+			})
+		})
 	}
+
+	//baseUrl:port/api/v2 route group!
+	apiV2 := router.Group("api/v2")
+	{
+		apiV2.GET("/SayHello", func(c *gin.Context) {
+			c.JSON(http.StatusRequestTimeout, gin.H{
+				"Saying Hello": "With Partial Status Code",
+			})
+		})
+	}
+
+	router.Run(":3000")
 
 }
