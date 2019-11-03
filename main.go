@@ -71,6 +71,7 @@ func main() {
 	router := gin.Default()
 
 	//server frontent static files
+	//trigger test again
 
 	router.Use(static.Serve("/", static.LocalFile("./views", true)))
 	//tes1
