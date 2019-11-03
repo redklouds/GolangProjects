@@ -1,4 +1,5 @@
 # Starter pipeline
+
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -58,7 +59,19 @@ steps:
     dir $(modulePath)
   displayName : "test 2"
 
-
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      
+      Write-Host "Hello World"
+      
+      git checkout $(Build.SourceBranchName)
+      
+      git remote add heroku https://heroku:$(pat)@git.heroku.com/redklouds-jokeapp.git
+      
+      git push heroku $(Build.SourceBranchName)
 
 
 - task: Docker@2
