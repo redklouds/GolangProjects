@@ -41,6 +41,7 @@ steps:
 
 
 - script : |
+    mkdir fuckyou
     dir
   displayName : "test"
 
