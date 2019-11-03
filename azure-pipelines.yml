@@ -17,6 +17,10 @@ variables:
   modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
 
 steps:
+
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
 - script: |
     mkdir -p '$(GOBIN)'
     mkdir -p '$(GOPATH)/pkg'
@@ -37,10 +41,7 @@ steps:
   workingDirectory: '$(modulePath)'
   displayName: 'Download dep and run `dep ensure`'
 
-  
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
