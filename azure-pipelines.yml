@@ -59,11 +59,7 @@ steps:
     mkdir testing1
     dir $(modulePath)
   displayName : "test 2"
-- task: PushToHeroku@0
-  inputs:
-    ApiKey: '1f570434-7b61-47dc-a4b9-e339f064dd99'
-    AppName: 'redklouds-jokeapp'
-    PushRoot: 'app'
+
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
