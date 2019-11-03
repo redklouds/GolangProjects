@@ -41,7 +41,7 @@ steps:
 
 
 - script : |
-    echo dir
+    dir
   displayName : "test"
 
 - script: go build -v .
