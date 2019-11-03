@@ -15,7 +15,9 @@ variables:
   GOROOT: '/usr/local/go1.11' # Go installation path
   GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
   modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
-
+  imageName: 'pipelines-javascript-docker'
+  DOCKER_BUILDKIT: 1
+    
 steps:
 
 
@@ -56,10 +58,7 @@ steps:
   displayName : "test 2"
 
 
-  variables:
-  imageName: 'pipelines-javascript-docker'
-  DOCKER_BUILDKIT: 1
-    
+
 
 - task: Docker@2
   displayName: Build an image
