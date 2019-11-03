@@ -18,8 +18,6 @@ variables:
 
 steps:
 
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
 - script: |
     mkdir -p '$(GOBIN)'
@@ -42,11 +40,13 @@ steps:
   displayName: 'Download dep and run `dep ensure`'
 
 
-
+- script : |
+    echo dir
+  displayName : "test"
 
 - script: go build -v .
   workingDirectory: '$(modulePath)'
-  displayName: 'Build'
+  displayName: 'Build Golang Source'
 
 
 - script: |
