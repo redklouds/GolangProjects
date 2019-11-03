@@ -45,9 +45,28 @@ steps:
     dir $(modulePath)
   displayName : "test"
 
-- script: go build -v .
+- script: go build -v -o
   workingDirectory: '$(modulePath)'
   displayName: 'Build Golang Source'
+
+
+- script : |
+    mkdir testing1
+    dir $(modulePath)
+  displayName : "test 2"
+
+
+  variables:
+  imageName: 'pipelines-javascript-docker'
+  DOCKER_BUILDKIT: 1
+    
+
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: $(imageName)
+    command: build
+    Dockerfile: $(modulePath)/Dockerfile
 
 
 - script: |
