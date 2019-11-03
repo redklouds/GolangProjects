@@ -41,7 +41,7 @@ steps:
 
 
 - script : |
-    mkdir fuckyou
+    mkdir testing1
     dir $(modulePath)
   displayName : "test"
 
