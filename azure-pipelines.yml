@@ -42,7 +42,7 @@ steps:
 
 - script : |
     mkdir fuckyou
-    dir
+    dir $(modulePath)
   displayName : "test"
 
 - script: go build -v .
