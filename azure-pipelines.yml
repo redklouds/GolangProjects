@@ -47,9 +47,10 @@ steps:
     dir $(modulePath)
   displayName : "test"
 
-- script: go build -v -o
-  workingDirectory: '$(modulePath)'
+- script: go build -v .
   displayName: 'Build Golang Source'
+  workingDirectory: '$(modulePath)'
+
 
 
 - script : |
