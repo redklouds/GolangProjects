@@ -4,9 +4,12 @@ import (
 	"net/http"
 	"strconv"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	jwt "github.com/dgrijalva/jwt-go"
+	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	//jwt "github.com/dgrijalva/jwt-go"
 
+	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -33,42 +36,44 @@ var jwtMiddleWare *jwtmiddleware.JWTMiddleware
 
 func main() {
 
-	jwtMiddleware := jwtmiddleware.New(jwtMiddleWare.Options{
-		ValidationGetGetter: func(token *jwt.Token) (interface{}, error){
-			aud := os.Getenv("AUTHO_API_AUDIENCE")
-			//setting the VerifyAudiene second parameter 'req' to false will return
-			//true if the current token audience matches what audience we are checing for
-			//* ITS VERY IMPORTANT TO VERIFY THE AUDIENCE OF A JWT TOKEN REQUEST
-			checkAudiene := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
-			if !checkAudiene {
-				return token, error.New("Invalid Audience")
+	/*
+		jwtMiddleware := jwtmiddleware.New(jwtMiddleWare.Options{
+			ValidationGetGetter: func(token *jwt.Token) (interface{}, error){
+				aud := os.Getenv("AUTHO_API_AUDIENCE")
+				//setting the VerifyAudiene second parameter 'req' to false will return
+				//true if the current token audience matches what audience we are checing for
+				//* ITS VERY IMPORTANT TO VERIFY THE AUDIENCE OF A JWT TOKEN REQUEST
+				checkAudiene := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
+				if !checkAudiene {
+					return token, error.New("Invalid Audience")
+				}
+
+				//verify iss claim
+
+				//this part is validating the DOMAIN with the JWT Request
+				iss := os.Getenv("AUTH0_DOMAIN")
+				checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
+				if !checkIss {
+					return token, errors.New("Invalid Issuer")
+				}
+
+				cert, err := getPermCert(token)
+				if err != nil {
+					log.Fatal("Could not get cert: %+v", err)
+				}
+
+				result, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(cert))
+
 			}
 
-			//verify iss claim
-
-			//this part is validating the DOMAIN with the JWT Request
-			iss := os.Getenv("AUTH0_DOMAIN")
-			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
-			if !checkIss {
-				return token, errors.New("Invalid Issuer")
-			}
-
-			cert, err := getPermCert(token)
-			if err != nil {
-				log.Fatal("Could not get cert: %+v", err)
-			}
-
-			result, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(cert))
-			
-		}
-	})
-
+		})
+	*/
 	router := gin.Default()
 
 	//server frontent static files
 
 	router.Use(static.Serve("/", static.LocalFile("./views", true)))
-
+	//tes1
 	//setup route group for the API
 	//seems this funtionality is the ability to group multiple routes into groups!
 	//it seems size wise and scale
