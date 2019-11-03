@@ -27,7 +27,7 @@ class App extends React.Component {
 class Home extends React.Component {
 
     authenticate(){
-        alert("SWAGGER");
+        alert("HELLO YOLOSWAGGEr");
         this.loggedIn = true;
     }
     render() {
