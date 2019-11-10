@@ -60,19 +60,17 @@ steps:
     dir $(modulePath)
   displayName : "test 2"
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      # Write your PowerShell commands here.
-      #some text
-      Write-Host "Hello World"
-      
-      git checkout $(Build.SourceBranchName)
-      
-      git remote add heroku https://heroku:$(pat)@git.heroku.com/redklouds-jokeapp.git
-      
-      git push heroku $(Build.SourceBranchName)
+
+#- task: PowerShell@2
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      # Write your PowerShell commands here.
+#      #some text
+#      Write-Host "Hello World"
+#      git checkout $(Build.SourceBranchName)
+#      git remote add heroku https://heroku:$(pat)@git.heroku.com/redklouds-jokeapp.git
+#      git push heroku $(Build.SourceBranchName)
 
 
 - task: Docker@2
