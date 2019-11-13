@@ -9,7 +9,7 @@ import (
 
 	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -32,9 +32,12 @@ var jokes = []Joke{
 	Joke{7, 0, "How does a penguin build it's house? Igloos it together."},
 }
 
-var jwtMiddleWare *jwtmiddleware.JWTMiddleware
+//var jwtMiddleWare *jwtmiddleware.JWTMiddleware
 
 func main() {
+	config := Configuration{}
+	config.GetConfigurations()
+	config.InitalizeConfigurations()
 
 	/*
 		jwtMiddleware := jwtmiddleware.New(jwtMiddleWare.Options{
@@ -117,7 +120,7 @@ func main() {
 		})
 	}
 
-	router.Run(":3000")
+	router.Run(":" + config.Port)
 
 }
 
