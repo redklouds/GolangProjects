@@ -36,7 +36,7 @@ var jokes = []Joke{
 
 func main() {
 	config := Configuration{}
-	config.GetConfigurations()
+	//config.GetConfigurations()
 	config.InitalizeConfigurations()
 
 	/*
