@@ -19,9 +19,7 @@ class App extends React.Component {
         }else {
             return (<Home />);
         }
-    }
-
-    
+    } 
 }
 
 class Home extends React.Component {
