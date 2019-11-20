@@ -13,3 +13,4 @@
 *.out
 .env
 config.json
+__debug_bin

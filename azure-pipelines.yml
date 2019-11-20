@@ -8,7 +8,7 @@
 
 trigger:
 - feat_serviceImplementation
-
+- Master
 pool:
   vmImage: 'ubuntu-latest'
 
