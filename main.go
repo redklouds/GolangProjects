@@ -1,7 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
@@ -10,9 +15,28 @@ import (
 	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	//jwtmiddleware "github.com/auth0/go-jwt-middleware"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
+
+type Response struct {
+	Message string `json:"message"`
+}
+
+type Jwks struct {
+	Keys []JSONWebKeys `json:"keys"`
+}
+
+type JSONWebKeys struct {
+	Kty string   `json:"kty"`
+	Kid string   `json:"kid"`
+	Use string   `json:"use"`
+	N   string   `json:"n"`
+	E   string   `json:"e"`
+	X5c []string `json:"x5c"`
+}
 
 // Joke contains information about a single joke
 //this is Importat to understand the encoding and decoding tildal enforcments
@@ -32,45 +56,53 @@ var jokes = []Joke{
 	Joke{7, 0, "How does a penguin build it's house? Igloos it together."},
 }
 
-//var jwtMiddleWare *jwtmiddleware.JWTMiddleware
+//the middleware
+var appJwtMiddleWare *jwtmiddleware.JWTMiddleware
 
 func main() {
 	config := Configuration{}
 	//config.GetConfigurations()
 	config.InitalizeConfigurations()
 
-	/*
-		jwtMiddleware := jwtmiddleware.New(jwtMiddleWare.Options{
-			ValidationGetGetter: func(token *jwt.Token) (interface{}, error){
-				aud := os.Getenv("AUTHO_API_AUDIENCE")
-				//setting the VerifyAudiene second parameter 'req' to false will return
-				//true if the current token audience matches what audience we are checing for
-				//* ITS VERY IMPORTANT TO VERIFY THE AUDIENCE OF A JWT TOKEN REQUEST
-				checkAudiene := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
-				if !checkAudiene {
-					return token, error.New("Invalid Audience")
-				}
+	jwtMiddlewareObj := jwtmiddleware.New(jwtmiddleware.Options{
+		//ValidationKeyGetter is a function that returns a key to validate the JWT
+		// The function that will return the Key to validate the JWT.
+		// It can be either a shared secret or a public key.
+		// Default value: nil
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			aud := os.Getenv("AUTHO_API_AUDIENCE")
+			//setting the VerifyAudiene second parameter 'req' to false will return
+			//true if the current token audience matches what audience we are checing for
+			//* ITS VERY IMPORTANT TO VERIFY THE AUDIENCE OF A JWT TOKEN REQUEST
+			checkAudiene := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 
-				//verify iss claim
-
-				//this part is validating the DOMAIN with the JWT Request
-				iss := os.Getenv("AUTH0_DOMAIN")
-				checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
-				if !checkIss {
-					return token, errors.New("Invalid Issuer")
-				}
-
-				cert, err := getPermCert(token)
-				if err != nil {
-					log.Fatal("Could not get cert: %+v", err)
-				}
-
-				result, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(cert))
-
+			if !checkAudiene {
+				return token, errors.New("Invalid Audience")
 			}
 
-		})
-	*/
+			//verify iss claim
+
+			//this part is validating the DOMAIN with the JWT Request
+			iss := os.Getenv("AUTH0_DOMAIN")
+
+			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
+			if !checkIss {
+				return token, errors.New("Invalid Issuer")
+			}
+
+			cert, err := getPermCert(token)
+			if err != nil {
+				log.Fatal("Could not get cert: %+v", err)
+			}
+
+			result, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(cert))
+			return result, nil
+
+		},
+		SigningMethod: jwt.SigningMethodRS256,
+	})
+
+	appJwtMiddleWare = jwtMiddlewareObj
 	router := gin.Default()
 
 	//server frontent static files
@@ -105,7 +137,9 @@ func main() {
 
 	//lets do another method of adding routes to a group above
 	// GET J/JOKEs
-	api.GET("/jokes", JokeHandler)
+	//adding the middleweare on this requst the .GET accepts multiple handlers, and
+	//our authMiuddleWare() returns a gin.HandlerFunc - handler function
+	api.GET("/jokes", authMiddleware(), JokeHandler)
 
 	// POST /jokes/likes/:JokeID
 	api.POST("/jokes/like/:jokeID", LikeJokesHandler)
@@ -122,6 +156,52 @@ func main() {
 
 	router.Run(":" + config.Port)
 
+}
+
+func authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the client secret key
+		//the CheckJWT makes a call out to the server to validate and comes back with a response and request style
+
+		err := appJwtMiddleWare.CheckJWT(c.Writer, c.Request)
+		if err != nil {
+			// Token not found
+			fmt.Println(err)
+			c.Abort()
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			c.Writer.Write([]byte("Unauthorized"))
+			return
+		}
+	}
+}
+
+func getPermCert(token *jwt.Token) (string, error) {
+	cert := ""
+	resp, err := http.Get(os.Getenv("AUTH0_DOMAIN") + ".well-known/jwks.json")
+	if err != nil {
+		return cert, err
+	}
+	defer resp.Body.Close()
+
+	var jwks = Jwks{}
+	err = json.NewDecoder(resp.Body).Decode(&jwks)
+
+	if err != nil {
+		return cert, err
+	}
+
+	x5c := jwks.Keys[0].X5c
+	for k, v := range x5c {
+		if token.Header["kid"] == jwks.Keys[k].Kid {
+			cert = "-----BEGIN CERTIFICATE-----\n" + v + "\n-----END CERTIFICATE-----"
+		}
+	}
+
+	if cert == "" {
+		return cert, errors.New("unable to find appropriate key")
+	}
+
+	return cert, nil
 }
 
 //JokeHandler Retrieves a list of avaliable Jokes

@@ -12,7 +12,101 @@ Understanding React
 */
 
 //import Home from "home";
+//https://www.freecodecamp.org/news/how-to-build-a-web-app-with-go-gin-and-react-cffdc473576/
+//about let
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+//about closures
+//https://blog.appsignal.com/2018/09/04/ruby-magic-closures-in-ruby-blocks-procs-and-lambdas.html
+//about setting env vvaraibles
+
+//https://github.com/joho/godotenv
+//about authoizations middleware for golang gin
+//https://dzone.com/articles/authentication-in-golang-with-jwts
+
+const AUTH0_CLIENT_ID = "";
+const AUTH0_DOMAIN = "redklouds-inc-dev.auth0.com";
+const AUTH0_CALLBACK_URL = "http://localhost:3000";
+const AUTH0_API_AUDIENCE = "";
+
 class App extends React.Component {
+    //this is the entry Component of the application!!!
+    parseHash() {
+        this.auth0 = new auth0.WebAuth({
+            domain: AUTH0_DOMAIN,
+            clientID: AUTH0_CLIENT_ID
+        });
+
+        this.auth0.parseHash(window.localtion.hash, (err, authResult)=>{
+            if(err) {
+                return console.log(err);
+            }
+            if (
+                
+                authResult !== null &&
+                authResult.accessToken !== null &&
+                authResult.idToken
+            ) {
+                localStorage.setItem("access_token", authResult.accessToken);
+                localStorage.setItem("id_token", authResult.idToken);
+                localStorage.setItem(
+                    //a key value pair where the value is an object
+                    "profile", JSON.stringify(authResult.idTokenPayload)
+                );
+                window.location = window.location.href.substr(
+                    0, window.location.href.indexOf("#")
+                );
+            }
+        });//end of parseHash extension
+    }
+
+
+    setup() {
+        $.ajaxSetup({
+            beforeSend: (r) => {
+                if (localStorage.getItem("access_token")){
+                    r.setRequestHeader(
+                        "Authorization",
+                        "Bearer" + localStorage.getItem("access_token")
+                    );
+                }
+            }
+        });
+    } //end of setup, setting up the request payload header
+
+    setState() {
+        let idToken = localStorage.getItem("id_token");
+        if (idToken){
+            this.loggedIn = true;
+        }else {
+            this.loggedIn = false;
+        }
+    }
+
+    /*
+    https://dev.to/torianne02/componentwillmount-vs-componentdidmount-5f0n
+    ComponentWillMount is depreciated, because it is NOT SAFE
+     this is a contruction for the compoennt which will not return before the first render
+     of the component, so for example say we make a initalize of some sort of data for this initalie page
+     that data has a chance NOT to show up if it depends on this contructor to retrieve it, because asically in javascript
+     this event is async in nature, so using 
+
+    */
+    componentWillMount(){
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     render() {
         if(this.loggedIn) {
             return (<LoggedIn />);
