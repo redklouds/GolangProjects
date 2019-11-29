@@ -24,9 +24,9 @@ Understanding React
 //https://dzone.com/articles/authentication-in-golang-with-jwts
 
 const AUTH0_CLIENT_ID = "";
-const AUTH0_DOMAIN = "redklouds-inc-dev.auth0.com";
-const AUTH0_CALLBACK_URL = "http://localhost:3000";
-const AUTH0_API_AUDIENCE = "";
+const AUTH0_DOMAIN = "";
+const AUTH0_CALLBACK_URL = "";
+const AUTH0_API_AUDIENCE = "https://redklouds-inc-dev.auth0.com/api/v2/";
 
 class App extends React.Component {
     //this is the entry Component of the application!!!
@@ -36,9 +36,9 @@ class App extends React.Component {
             clientID: AUTH0_CLIENT_ID
         });
 
-        this.auth0.parseHash(window.localtion.hash, (err, authResult)=>{
+        this.auth0.parseHash({hash: window.location.hash}, function(err, authResult){
             if(err) {
-                return console.log(err);
+                return console.log("ERROR" + err);
             }
             if (
                 
@@ -46,12 +46,15 @@ class App extends React.Component {
                 authResult.accessToken !== null &&
                 authResult.idToken
             ) {
+
+                console.log("DOIUNG SOMETHING")
                 localStorage.setItem("access_token", authResult.accessToken);
                 localStorage.setItem("id_token", authResult.idToken);
                 localStorage.setItem(
                     //a key value pair where the value is an object
                     "profile", JSON.stringify(authResult.idTokenPayload)
                 );
+                console.log("Location: " +  window.location.href.indexOf("#") );
                 window.location = window.location.href.substr(
                     0, window.location.href.indexOf("#")
                 );
@@ -62,15 +65,19 @@ class App extends React.Component {
 
     setup() {
         $.ajaxSetup({
+            //before the sending of the ajax request , go to the cache and get the 
+            //access token
+       
             beforeSend: (r) => {
                 if (localStorage.getItem("access_token")){
                     r.setRequestHeader(
                         "Authorization",
-                        "Bearer" + localStorage.getItem("access_token")
+                        "Bearer " + localStorage.getItem("access_token")
                     );
                 }
             }
         });
+        console.log("Finished set up " + localStorage.getItem("access_token"))
     } //end of setup, setting up the request payload header
 
     setState() {
@@ -80,6 +87,7 @@ class App extends React.Component {
         }else {
             this.loggedIn = false;
         }
+        
     }
 
     /*
@@ -92,18 +100,10 @@ class App extends React.Component {
 
     */
     componentWillMount(){
-
+        this.setup();
+        this.parseHash();
+        this.setState();
     }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -118,12 +118,42 @@ class App extends React.Component {
 
 class Home extends React.Component {
 
+    constructor(props){
+        super(props);
+        this.authenticate = this.authenticate.bind(this);
+    }
     authenticate(){
         alert("hehe Take Tickles");
+
+        this.WebAuth = new auth0.WebAuth( {
+            domain: AUTH0_DOMAIN,
+            clientID: AUTH0_CLIENT_ID,
+            scope: "openid profile",
+            audience : AUTH0_API_AUDIENCE,
+            responseType: "token id_token",
+            redirectUri: AUTH0_CALLBACK_URL
+        });
+        alert(this.WebAuth);
+        console.log(this.WebAuth);
+        this.WebAuth.authorize();
         this.loggedIn = true;
+        console.log("DONE");
     }
     render() {
+        console.log("DONE" + this.WebAuth);
         return (
+            <div className="container">
+                <div className="row">
+                    <div className="col-xs-8 col-xs-offset-2 jumbotron text-center">
+                        <h1>Jokish</h1>
+                        <p>A load of Dad Jokes !</p>
+                        <p> Sign in to get access</p>
+                        <a onClick={this.authenticate.bind(this)}
+                        className="btn btn-primary btn-lg btn-login btn-block"> Sign In</a>
+                    </div>
+                </div>
+            </div>
+/*
             <div className="container">
                 <div className="col-xs-8 col-xs-offset-2 jumbotron text-center">
                     <h1> Jokeish</h1>
@@ -132,6 +162,7 @@ class Home extends React.Component {
                     <a onClick={this.authenticate} className="btn btn-primary btn-lg btn-login btn-block">Sign in </a>
                 </div>
             </div>
+            */
         )
     }
 }
@@ -144,34 +175,49 @@ class Joke extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            liked: ""
-        }
+            liked: "",
+            jokes : []
+        };
         this.like = this.like.bind(this);
+        this.serverRequest = this.serverRequest.bind(this);
+    }
+
+    serverRequest(joke){
+        $.post(
+            "http://localhost:3000/api/jokes/like/" + joke.id,
+            {like: 1},
+            res => {
+                console.log("Res....", res);
+                this.setState({liked: "Liked!", jokes: res});
+                this.props.jokes = res;
+            }
+        )
     }
 
     like(){
         //helperfunction of this component on what we should do if somone liked this particular compnent or joek
         //edit later
+        let joke = this.props.joke;
+        this.serverRequest(joke);
     }
 
     render() {
         return (
             <div className="col-xs-4">
-                <div className="panel panel-default">
-                    <div className="panel-heading">
-                        <div id="">this.prop</div>.joke.id}<span className="pull-right">{this.state.liked}</span>
-                    </div>
-                    <div className="panel-body">
-                        {this.props.Joke.Joke}
-                    </div>
-                    <div className="panel-footer">
-                        {this.props.Joke.likes} Likes &nbsp;
-                        <a onClick={this.like} className="btn btn-default">
-                            <span className="glyphicon glyphicon-thumbs-up"></span>
-                        </a>
-                    </div>
-                </div>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                #{this.props.joke.id}{" "}
+                <span className="pull-right">{this.state.liked}</span>
+              </div>
+              <div className="panel-body">{this.props.joke.joke}</div>
+              <div className="panel-footer">
+                {this.props.joke.likes} Likes &nbsp;
+                <a onClick={this.like} className="btn btn-default">
+                  <span className="glyphicon glyphicon-thumbs-up" />
+                </a>
+              </div>
             </div>
+          </div>
         )
     }
 }
@@ -182,6 +228,31 @@ class LoggedIn extends React.Component {
         this.state = {
             jokes : []
         }
+        this.serverRequest = this.serverRequest.bind(this);
+        //still not sure what this means when we bind this?..
+        this.logout = this.logout.bind(this);
+    }
+
+    serverRequest() {
+        $.get("/api/jokes", res => {
+            this.setState( {
+                jokes : res
+            });
+        });
+    }
+
+    componentDidMount() {
+        this.serverRequest();
+    }
+
+    logout() {
+        localStorage.removeItem("id_token");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("profile");
+        //location is how react controls where we are or where we want to go
+        //it also handles reloading of the page and/or component
+        //#X see window.location.reload(this)
+        location.reload();
     }
 
     render() {
@@ -195,6 +266,12 @@ class LoggedIn extends React.Component {
                     <h2> Jokish</h2>
                     <p> Let's feed you with some funny jokes Nao :D</p>
                     <div className="row">
+                        <div className="container">
+                            {this.state.jokes.map((joke, i)=> {
+                                //we are passing the Joke component the properties of key and joke
+                                return <Joke key={i} joke={joke} />;
+                            })}
+                        </div>
                         {this.state.jokes.map(function(joke, i) {
                         return (<Joke key={i} joke={joke} />);
                         })}
