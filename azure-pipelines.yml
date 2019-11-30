@@ -15,7 +15,9 @@ pool:
 variables:
   GOBIN:  '$(GOPATH)/bin' # Go binaries path
   GOROOT: '/usr/local/go1.11' # Go installation path
-  GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
+  #GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
+  #so VM/goPath/HERE IS your workspace
+  GOPATH: '$(system.defaultWorkingDirectory)/gopath'
   modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
   imageName: 'React-GoLang-Img'
   DOCKER_BUILDKIT: 1
@@ -51,7 +53,8 @@ steps:
 
 - script: go build -v .
   displayName: 'Build Golang Source'
-  workingDirectory: '$(modulePath)'
+  workingDirectory: '$(GOPATH/src)'
+  #workingDirectory: '$(modulePath)'
 
 
 
