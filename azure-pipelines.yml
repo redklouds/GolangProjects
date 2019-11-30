@@ -53,7 +53,7 @@ steps:
 
 - script: go build -v .
   displayName: 'Build Golang Source'
-  workingDirectory: '$(GOPATH/src)'
+  workingDirectory: '$(GOPATH)/src'
   #workingDirectory: '$(modulePath)'
 
 
