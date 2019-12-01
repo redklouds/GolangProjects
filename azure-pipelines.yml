@@ -53,17 +53,18 @@ steps:
     dir $(modulePath)
   displayName : "test"
 
-- script: go build -v .
-  displayName: 'Build Golang Source'
+#this will build the golang code
+- script: go test -v 
+  displayName: 'Run Golang Test'
   #workingDirectory: '$(GOPATH)/src'
   workingDirectory: '$(modulePath)'
 
 
-
-- script : |
-    mkdir testing1
-    dir $(modulePath)
-  displayName : "test 2"
+#this will build the golang code
+- script: go build -v -o main .
+  displayName: 'Build Golang Source'
+  #workingDirectory: '$(GOPATH)/src'
+  workingDirectory: '$(modulePath)'
 
 
 #- task: PowerShell@2
