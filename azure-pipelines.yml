@@ -18,7 +18,8 @@ variables:
   #GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
   #so VM/goPath/HERE IS your workspace
   GOPATH: '$(system.defaultWorkingDirectory)/gopath'
-  modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)'
+  modulePath: '$(GOPATH)/src/JokeApp'
+  #modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)'
   #modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
   imageName: 'React-GoLang-Img'
   DOCKER_BUILDKIT: 1
