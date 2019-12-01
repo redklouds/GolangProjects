@@ -24,7 +24,8 @@ RUN dep ensure
 
 #RUN go test -v 
 
-RUN go build -o main .
+# do not need since there is already a prebuild stage in the pipeline that already produced a .main file
+#RUN go build -o main .
 
 #WORKDIR /app
 
