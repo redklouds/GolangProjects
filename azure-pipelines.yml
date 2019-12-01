@@ -18,7 +18,7 @@ variables:
   #GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
   #so VM/goPath/HERE IS your workspace
   GOPATH: '$(system.defaultWorkingDirectory)/gopath'
-  modulePath: '$(GOPATH)/src/JokeApp'
+  modulePath: '$(GOPATH)/src/JokeApp' #this is extremly important that the repository name maches your project name or else the directory is different
   #modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)'
   #modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
   imageName: 'React-GoLang-Img'

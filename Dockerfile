@@ -22,7 +22,7 @@ WORKDIR /go/src/app
 
 RUN dep ensure
 
-RUN go test -v 
+#RUN go test -v 
 
 RUN go build -o main .
 
