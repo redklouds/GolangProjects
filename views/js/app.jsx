@@ -23,11 +23,16 @@ Understanding React
 //about authoizations middleware for golang gin
 //https://dzone.com/articles/authentication-in-golang-with-jwts
 
-const AUTH0_CLIENT_ID = "";
-const AUTH0_DOMAIN = "";
-const AUTH0_CALLBACK_URL = "";
+/*
+Not sure how to perform environment variables with react and server side rendering...
+*/
+const AUTH0_CLIENT_ID = "GYuPszOCHSJcsNFl6QtunuECuf35PfBb";
+const AUTH0_DOMAIN = "redklouds-inc-dev.auth0.com";
+const AUTH0_CALLBACK_URL = "http://localhost:3000";
 const AUTH0_API_AUDIENCE = "https://redklouds-inc-dev.auth0.com/api/v2/";
+/*
 
+*/
 class App extends React.Component {
     //this is the entry Component of the application!!!
     parseHash() {
