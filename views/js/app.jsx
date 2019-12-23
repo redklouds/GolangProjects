@@ -270,6 +270,8 @@ class LoggedIn extends React.Component {
                     </span>
                     <h2> Jokish</h2>
                     <p> Let's feed you with some funny jokes Nao :D</p>
+
+                    <a onClick={this.GetMoreJokes} >Get More Jokes!</a>
                     <div className="row">
                         <div className="container">
                             {this.state.jokes.map((joke, i)=> {
@@ -284,6 +286,10 @@ class LoggedIn extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    GetMoreJokes(){
+        alert("YOU WNAT MORE JOKES!?")
     }
 }
 

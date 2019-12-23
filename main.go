@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	appauthmiddleware "JokeApp/authmiddleware"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	apphandlers "JokeApp/handlers"
 )
@@ -24,9 +27,21 @@ type Joke struct {
 //the middleware
 var appJwtMiddleWare *jwtmiddleware.JWTMiddleware
 
+func ApiMiddlewareMongoDriver(db *mongo.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("databaseConn", db)
+		c.Next()
+	}
+}
 func main() {
 
 	//per := appauthmiddleware.Person{}
+	_ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	dbConfig := apphandlers.DBConfig{
+		ConnectStr: "mongodb://jokesdb:aFGLj9SPK2C4w6apRv4KnVKTi33JPqiPlTSNQTXaYBRjHn0uvHYrw8GpT7ks6ZmhuSt8BYYDwEfFPgteiMfxLA==@jokesdb.documents.azure.com:10255/?ssl=true&replicaSet=globaldb",
+	}
+
+	dbClient := apphandlers.GetMongoConnection(_ctx, dbConfig)
 
 	config := Configuration{}
 	//config.GetConfigurations()
@@ -38,6 +53,7 @@ func main() {
 	//trigger test again
 
 	router.Use(static.Serve("/", static.LocalFile("./views", true)))
+	router.Use(ApiMiddlewareMongoDriver(dbClient))
 	//tes1
 	//setup route group for the API
 	//seems this funtionality is the ability to group multiple routes into groups!
