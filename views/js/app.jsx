@@ -28,7 +28,8 @@ Not sure how to perform environment variables with react and server side renderi
 */
 const AUTH0_CLIENT_ID = "GYuPszOCHSJcsNFl6QtunuECuf35PfBb";
 const AUTH0_DOMAIN = "redklouds-inc-dev.auth0.com";
-const AUTH0_CALLBACK_URL = "http://localhost:3000";
+//const AUTH0_CALLBACK_URL = "http://localhost:3000";
+const AUTH0_CALLBACK_URL = "";
 const AUTH0_API_AUDIENCE = "https://redklouds-inc-dev.auth0.com/api/v2/";
 /*
 
@@ -189,7 +190,9 @@ class Joke extends React.Component {
 
     serverRequest(joke){
         $.post(
-            "http://localhost:3000/api/jokes/like/" + joke.id,
+            "/api/jokes/like/" + joke.id,
+            
+            //"http://localhost:3000/api/jokes/like/" + joke.id,
             {like: 1},
             res => {
                 console.log("Res....", res);
